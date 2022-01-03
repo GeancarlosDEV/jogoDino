@@ -1,5 +1,7 @@
 const dino = document.querySelector('.dino');
 const background = document.querySelector('.background');
+const inicioJogo = document.querySelector('#inicioJogo');
+const fimJogo = document.querySelector('#fimJogo');
 
 let isJumping = false;
 let isGameOver = false;
@@ -17,29 +19,31 @@ function handleKeyUp(event) {
 function jump() {
   if (!start) {
     start = true;
+	inicioJogo.style.display = 'none';
   }
   isJumping = true;
+  if (!isGameOver) {
+	  let upInterval = setInterval(() => {
+		if (position >= 150) {
+		  // Descendo
+		  clearInterval(upInterval);
 
-  let upInterval = setInterval(() => {
-    if (position >= 150) {
-      // Descendo
-      clearInterval(upInterval);
-
-      let downInterval = setInterval(() => {
-        if (position <= 0) {
-          clearInterval(downInterval);
-          isJumping = false;
-        } else {
-          position -= 20;
-          dino.style.bottom = position + 'px';
-        }
-      }, 20);
-    } else {
-      // Subindo
-      position += 20;
-      dino.style.bottom = position + 'px';
-    }
-  }, 20);
+		  let downInterval = setInterval(() => {
+		    if (position <= 0) {
+		      clearInterval(downInterval);
+		      isJumping = false;
+		    } else {
+		      position -= 20;
+		      dino.style.bottom = position + 'px';
+		    }
+		  }, 20);
+		} else {
+		  // Subindo
+		  position += 20;
+		  dino.style.bottom = position + 'px';
+		}
+	  }, 20);
+	}
 }
 
 function createCactus() {
@@ -55,15 +59,17 @@ function createCactus() {
 
   let leftTimer = setInterval(() => {
 	if (start) {
-		if (cactusPosition < -60) {
-		  // Saiu da tela
-		  clearInterval(leftTimer);
-		  background.removeChild(cactus);
+		if (isGameOver) {
+          clearInterval(leftTimer);
+		  fimJogo.style.display = 'block';
 		} else if (cactusPosition > 0 && cactusPosition < 60 && position < 60) {
 		  // Game over
 		  clearInterval(leftTimer);
 		  isGameOver = true;
-		  document.body.innerHTML = '<h1 class="game-over">Fim de jogo</h1>';
+		} else if (cactusPosition < -60) {
+		  // Saiu da tela
+		  clearInterval(leftTimer);
+		  background.removeChild(cactus);
 		} else {
 		  cactusPosition -= 10;
 		  cactus.style.left = cactusPosition + 'px';
